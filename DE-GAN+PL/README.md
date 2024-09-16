@@ -49,7 +49,6 @@ python train.py --model de-gan --data_dir <path_to_data> --epochs <num_epochs>
 To evaluate the trained model and enhance document images:
 
 ```bash
-python predict.py --input_folder <folder_path> --output_folder <output_path>
 ```
 - `--input_folder`: Path to the folder containing degraded document images.
 - `--output_folder`: Path to save the enhanced document images.
