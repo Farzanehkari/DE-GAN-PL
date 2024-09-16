@@ -76,7 +76,7 @@ def generator_model(pretrained_weights=None, input_size=(256,256,1), biggest_lay
     conv10 = Conv2D(1, 1, activation='sigmoid')(conv9)
     model = Model(inputs=inputs, outputs=conv10)
     
-    model.compile(optimizer=Adam(learning_rate=1e-5))  # optimizer to generator is added 
+    model.compile(optimizer=Adam(learning_rate=1e-5))  
 
     return model
 
@@ -120,12 +120,7 @@ def perceptual_loss_fn(y_true, y_pred):
     y_true_features = global_vgg(y_true)
     y_pred_features = global_vgg(y_pred)
     return MeanSquaredError()(y_true_features, y_pred_features)
-"""
-def perceptual_loss_fn(y_true, y_pred):
-    y_true_features = global_vgg(tf.image.grayscale_to_rgb(y_true))
-    y_pred_features = global_vgg(tf.image.grayscale_to_rgb(y_pred))
-    return MeanSquaredError()(y_true_features, y_pred_features)
-"""
+
 def get_gan_network(disc_model, gen_model, input_size=(256, 256, 1)):
     
     disc_model.trainable = False
@@ -140,8 +135,7 @@ def get_gan_network(disc_model, gen_model, input_size=(256, 256, 1)):
     gan = Model(inputs=gan_input, outputs=[valid, gen_output, gen_output], name="GAN_Model")
 
     gan.compile(
-        #optimizer=Adam(learning_rate=1e-5),
-        optimizer=Adam(learning_rate=1e-5, clipvalue=1.0),  # Clip gradient values at 1.0
+        optimizer=Adam(learning_rate=1e-5, clipvalue=1.0),  
 
         loss=['mse', 'binary_crossentropy', perceptual_loss_fn],
         loss_weights=[1, 50, 100],
