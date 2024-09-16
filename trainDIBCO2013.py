@@ -31,7 +31,6 @@ def scheduler(epoch, lr):
         return lr * tf.math.exp(-0.1)
 
 lr_scheduler = LearningRateScheduler(scheduler, verbose=1)
-#reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=1e-7)
 reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr=1e-7, verbose=1)
 
 
@@ -40,7 +39,6 @@ reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=3, min_lr
 def initialize_loss_arrays(epochs):
     return [np.nan] * epochs
 
-# Set a random seed for reproducibility
 random_seed = 42
 np.random.seed(random_seed)
 tf.random.set_seed(random_seed)
@@ -77,9 +75,8 @@ results = {
     "PSNR": [],
     "SSIM": [],
     "F-measure": [],
-    #"False_Positives": [],
     "DRD": [],
-    "FPS": []  # Added FPS key to results dictionary
+    "FPS": []  
 
 }
 
@@ -98,7 +95,6 @@ def visualize_images(images, titles, rows=1, cols=3):
         axes[i].axis('off')
     plt.show()
 
-#def train_gan(generator, discriminator, ep_start=1, epochs=32, batch_size=64):
 def train_gan(generator, discriminator, ep_start=1, epochs=32, batch_size=64, callbacks=[]):
 
 
@@ -125,13 +121,12 @@ def train_gan(generator, discriminator, ep_start=1, epochs=32, batch_size=64, ca
 
     gan = get_gan_network(discriminator, generator, input_size=(256, 256, 1))
 
-    # Load weights if they exist for epoch 6
-    if os.path.exists('weightsDIBCO2013/generator_epoch_128.weights.h5'):
-        generator.load_weights('weightsDIBCO2013/generator_epoch_128.weights.h5')
-        print("Loaded generator weights from epoch 117")
-    if os.path.exists('weightsDIBCO2013/discriminator_epoch_128.weights.h5'):
-        discriminator.load_weights('weightsDIBCO2013/discriminator_epoch_128.weights.h5')
-        print("Loaded discriminator weights from epoch 117")
+    if os.path.exists('continueTraining/generator_epoch_40.weights.h5'):
+        generator.load_weights('continueTraining/generator_epoch_40.weights.h5')
+        print("Loaded generator weights from epoch 40")
+    if os.path.exists('continueTraining/discriminator_epoch_40.weights.h5'):
+        discriminator.load_weights('continueTraining/discriminator_epoch_40.weights.h5')
+        print("Loaded discriminator weights from epoch 40")
 
     d_loss_real_arr, d_loss_fake_arr = [], []
     generator_adversarial_loss_arr, generator_pixelwise_loss_arr, generator_perceptual_loss_arr = [], [], []
@@ -146,7 +141,6 @@ def train_gan(generator, discriminator, ep_start=1, epochs=32, batch_size=64, ca
         val_total_d_loss_real, val_total_d_loss_fake = 0, 0
         val_total_generator_adversarial_loss, val_total_generator_pixelwise_loss, val_total_generator_perceptual_loss = 0, 0, 0
 
-        #for im in tqdm(range(len(train_deg_images))):
         for im in tqdm(range(len(train_deg_images)), desc=f"Epoch {e}", leave=False, disable=True):
 
             b_wat_batch = train_deg_images[im].reshape((1, 256, 256, 1))
@@ -156,13 +150,11 @@ def train_gan(generator, discriminator, ep_start=1, epochs=32, batch_size=64, ca
             # Ensure normalized generated images
             generated_images = generator.predict(b_wat_batch)
         
-            # No need to renormalize here since we assume all operations keep data in [0, 1]
             valid = np.ones((b_gt_batch.shape[0], 16, 16, 1))
             fake = np.zeros((b_gt_batch.shape[0], 16, 16, 1))
         
             discriminator.trainable = True
-            # Train the discriminator less frequently
-            if im % 5 == 0:  # Train discriminator every other batch
+            if im % 5 == 0:  
                 
                 d_loss_real = discriminator.train_on_batch([b_gt_batch, b_wat_batch], valid)
                 d_loss_fake = discriminator.train_on_batch([generated_images, b_wat_batch], fake)
@@ -233,21 +225,16 @@ def train_gan(generator, discriminator, ep_start=1, epochs=32, batch_size=64, ca
         results["PSNR"].append(psnr_value)
         results["SSIM"].append(ssim_value)
         results["F-measure"].append(f_measure_value)
-        #results["False_Positives"].append(false_positives_value)
         results["DRD"].append(drd_value)
-        results["FPS"].append(fps_value)  # Added FPS value to results logging
+        results["FPS"].append(fps_value)  
 
 
-        # Save generator weights
         generator.save_weights(f'weightsDIBCO2013/generator_epoch_{e}.weights.h5')
-        # Optionally, save discriminator weights
         discriminator.save_weights(f'weightsDIBCO2013/discriminator_epoch_{e}.weights.h5')
         
-        #if e % 10 == 0 or e == epochs:
         visualize_images([b_wat_batch[0], generated_images[0], b_gt_batch[0]], 
                              ['Degraded', 'Generated', 'Ground Truth'])
     
-    # Save the results to an Excel file
     df = pd.DataFrame(results)
     df.to_excel('training_results.xlsx', index=False)
 
@@ -267,7 +254,6 @@ def evaluate(generator, discriminator, epoch, val_deg_images, val_clean_images):
         clean_image = val_clean_images[i].reshape(1, 256, 256, 1)
         generated_image = generator.predict(deg_image)
         
-        # Convert and normalize
         deg_image_rgb = convert_grayscale_to_rgb(deg_image.squeeze())
         clean_image_rgb = convert_grayscale_to_rgb(clean_image.squeeze())
         generated_image_rgb = convert_grayscale_to_rgb(generated_image.squeeze())
@@ -277,7 +263,6 @@ def evaluate(generator, discriminator, epoch, val_deg_images, val_clean_images):
         f_measure_total += f_measure(clean_image_rgb, generated_image_rgb)
         drd_total += drd(clean_image_rgb, generated_image_rgb)
     
-    # Calculate FPS
     fps = calculate_fps(generator, val_deg_images)
     
     return psnr_total / num_images, ssim_total / num_images, f_measure_total / num_images, drd_total / num_images, fps
@@ -286,7 +271,6 @@ def plot_losses(epochs, d_loss_real_arr, d_loss_fake_arr, generator_adversarial_
                 generator_perceptual_loss_arr, val_d_loss_real_arr, val_d_loss_fake_arr, val_generator_adversarial_loss_arr,
                 val_generator_pixelwise_loss_arr, val_generator_perceptual_loss_arr):
 
-    # Adjust the range of the x-axis to match the length of the loss arrays
     epoch_range = range(1, len(d_loss_real_arr) + 1)
 
     plt.figure(figsize=(10, 10))
