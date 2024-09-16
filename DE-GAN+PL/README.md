@@ -1,1 +1,2 @@
-
+DE-GAN+PL: Document Image Enhancement Using Generative Adversarial Networks with Perceptual Loss
+This repository contains the implementation of DE-GAN+PL, a GAN-based model enhanced with perceptual loss to improve the quality of degraded document images. This model builds upon the original DE-GAN architecture, incorporating perceptual loss to better preserve structural details and enhance text readability, making it especially effective for tasks like Optical Character Recognition (OCR).
