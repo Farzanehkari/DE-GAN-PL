@@ -56,6 +56,9 @@ To evaluate the trained model and enhance document images:
 
 The model automatically loads pre-trained weights if available.
 
+## References
+This project builds upon the original **DE-GAN** model. You can find the original implementation of **DE-GAN** [here](https://github.com/dali92002/DE-GAN).
+
 ## Contact
 For any questions or inquiries, feel free to [email](karimpour.f@gmail.com).
 
