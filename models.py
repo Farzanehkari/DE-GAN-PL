@@ -83,7 +83,6 @@ def generator_model(pretrained_weights=None, input_size=(256,256,1), biggest_lay
 def discriminator_model(input_size=(256, 256, 1)):
     def d_layer(layer_input, filters, f_size=4, bn=True):
         d = Conv2D(filters, kernel_size=f_size, strides=2, padding='same')(layer_input)
-        #d = LeakyReLU(negative_slope=0.2)(d)
         d = LeakyReLU(alpha=0.2)(d)
 
         if bn:
@@ -99,7 +98,6 @@ def discriminator_model(input_size=(256, 256, 1)):
     d4 = d_layer(d3, df * 4)
     validity = Conv2D(1, kernel_size=4, strides=1, padding='same', activation='sigmoid')(d4)
     discriminator = Model([img_A, img_B], validity)
-    #discriminator.compile(loss='mse', optimizer=get_optimizer(), metrics=['accuracy'])
     discriminator.compile(loss='mse', optimizer=Adam(learning_rate=1e-5), metrics=['accuracy'])
 
     return discriminator
@@ -128,9 +126,8 @@ def get_gan_network(disc_model, gen_model, input_size=(256, 256, 1)):
     gen_output = gen_model(gan_input)
     valid = disc_model([gen_output, gan_input])
 
-    # Naming the outputs
     valid = Lambda(lambda x: x, name='valid')(valid)
-    gen_output = Lambda(lambda x: x, name='gen_output')(gen_output)#the gen_output is the generated image
+    gen_output = Lambda(lambda x: x, name='gen_output')(gen_output)
 
     gan = Model(inputs=gan_input, outputs=[valid, gen_output, gen_output], name="GAN_Model")
 
