@@ -28,14 +28,42 @@ def f_measure(true, pred, beta=1):
 
 import time
 
-def calculate_fps(generator, test_images):
-    start_time = time.time()
-    for img in test_images:
-        _ = generator.predict(img.reshape(1, 256, 256, 1))
-    end_time = time.time()
-    total_time = end_time - start_time
-    fps = len(test_images) / total_time
-    return fps
+def calculate_fps(y_true, y_pred):
+ 
+    # Threshold the images to binary values using cv2.threshold
+    _, y_true = cv2.threshold(y_true, 0.5, 1, cv2.THRESH_BINARY)
+    _, y_pred = cv2.threshold(y_pred, 0.5, 1, cv2.THRESH_BINARY)
+
+    # Convert to uint8 for calculation (1 = white, 0 = black)
+    y_true = y_true.astype(np.uint8)
+    y_pred = y_pred.astype(np.uint8)
+
+    # Skeletonize the ground truth image
+    skeleton_gt = skeletonize(y_true)  # Skeletonized ground truth
+
+    # Calculate pseudo-true positives (ptp) based on skeletonized ground truth
+    ptp = np.zeros_like(y_true)
+    ptp[(y_pred == 0) & (skeleton_gt == 0)] = 1  # Pseudo-true positives
+    numptp = np.sum(ptp)  # Sum of pseudo-true positives
+
+    # True positives (correctly predicted text pixels)
+    tp = np.sum((y_pred == 0) & (y_true == 0))
+
+    # Precision and recall
+    precision = tp / (np.sum(y_pred == 0) + 1e-8)  # Small constant to avoid division by zero
+    recall = tp / (np.sum(y_true == 0) + 1e-8)
+    precall = numptp / np.sum(1 - skeleton_gt)  # Skeleton-based recall
+
+    # Calculate Pseudo-F measure using skeleton-based recall
+    if (precall + precision) == 0:
+        pseudo_f_measure = 0.0
+    else:
+        pseudo_f_measure = (2 * precall * precision) / (precall + precision)
+
+    # Debug output for checking values
+    print(f"tp: {tp}, precision: {precision}, recall: {recall}, precall (skeleton recall): {precall}, Pseudo-F: {pseudo_f_measure}")
+
+    return pseudo_f_measure * 100
 
 
 def drd(true, pred):
