@@ -41,7 +41,9 @@ To train the **DE-GAN+PL** model, use the following command:
 ```bash
 python train.py --model de-gan --data_dir <path_to_data> --epochs <num_epochs>
 ```
-- `--data_dir`: Specify the path to your training and validation datasets.
+
+`--data_dir: Specify the path to your training and validation datasets. For example: [this directory](https://github.com/Farzanehkari/GenPL/tree/main/DE-GAN%2BPL/data/A).`
+
 - `--epochs`: Number of training epochs (default is 80).
 
 ### Model Evaluation
