@@ -318,7 +318,7 @@ discriminator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5), lo
 generator.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5), loss=['mse', 'binary_crossentropy', perceptual_loss_fn], metrics=[psnr_metric, ssim_metric])
 
 # Train the GAN
-train_gan(generator, discriminator, ep_start=129, epochs=256, batch_size=128, callbacks=[lr_scheduler, reduce_lr])
+train_gan(generator, discriminator, ep_start=41, epochs=80, batch_size=128, callbacks=[lr_scheduler, reduce_lr])
 
 # Predict and visualize results
 predict_and_visualize(generator, 'PatchImages/A/test/', 'Results3/test_results/')
