@@ -14,7 +14,7 @@ This repository contains the **NAF-DPM+PL** model for document image enhancement
 
 The **NAF-DPM+PL** model builds on the original **NAF-DPM** (Nonlinear Activation-Free Diffusion Probabilistic Model) and enhances it by incorporating **perceptual loss** for improved structural consistency and text readability in document images.
 
-The original **NAF-DPM** model can be found [here]([https://github.com/author/NAF-DPM](https://github.com/ispamm/NAF-DPM/tree/main)). This modified version enhances document binarization tasks by maintaining both pixel-level accuracy and perceptual quality.
+The original **NAF-DPM** model can be found [here](https://github.com/ispamm/NAF-DPM/tree/main). This modified version enhances document binarization tasks by maintaining both pixel-level accuracy and perceptual quality.
 
 ## Prerequisites
 
@@ -31,11 +31,6 @@ To run this model, you will need:
 - opencv-python >= 4.5.3.56
 - yaml >= 5.4
 
-Install dependencies with:
-
-```bash
-pip install -r requirements.txt
-```
 
 ## Training the Model
 
