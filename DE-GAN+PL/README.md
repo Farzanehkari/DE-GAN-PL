@@ -45,15 +45,6 @@ python train.py --model de-gan --data_dir <path_to_data> --epochs <num_epochs>
 `--data_dir: Specify the path to your training and validation datasets.
 - `--epochs`: Number of training epochs (default is 80).
 
-### Model Evaluation
-
-To evaluate the trained model and enhance document images:
-
-```bash
-```
-- `--input_folder`: Path to the folder containing degraded document images.
-- `--output_folder`: Path to save the enhanced document images.
-
 The model automatically loads pre-trained weights if available.
 
 ## References
